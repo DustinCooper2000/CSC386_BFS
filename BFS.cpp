@@ -12,12 +12,21 @@
  * TODO: Define any structs you might need here.
  */
 
+struct Nodes
+{
+    bool on_visit_list;
+    bool visited;
+    int parents;
+    int dist_from_start;
+    bool goal;
+};
+
 struct Graph
 {
     std::vector<std::string> data;
     std::vector<std::vector<int> > edges;
     std::vector<std::vector<float> > edge_costs;
-
+    std::vector<std::vector<int> > parents;
     // TODO: Add any members you need to the graph.
 };
 
@@ -79,12 +88,18 @@ Graph createGraph(std::string file_path)
         in >> city1 >> city2 >> dist;
         int c1 = nameToIdx(city1, g.data);
         int c2 = nameToIdx(city2, g.data);
+        //std::cout << c1 << std::endl;
         g.edges[c1].push_back(c2);
         g.edges[c2].push_back(c1);
         g.edge_costs[c1].push_back(dist);
         g.edge_costs[c2].push_back(dist);
     }
-
+    //std::cout << g.edges[0][2] << std::endl;
+    //for (int i = 0; i < g.edges.size(); i++)
+      //std::cout << g.edges[i].size() << std::endl;
+      //for (int j = 0; j < g.edge_costs[i].size(); j++)
+      //  std::cout << g.edge_costs[i][j] << std::endl;
+    
     return g;
 }
 
@@ -144,8 +159,31 @@ std::vector<int> bfs(int start, int goal, Graph& g)
 {
     initGraph(g);
     std::vector<int> path;  // Put your final path here.
-
+    std::vector<int> visited;
+    std::vector<int> dist_list;
     std::queue<int> visit_list;
+    std::vector<int> neighbors;
+    int curr = start;
+    int high_dist = HIGH;
+    visit_list.push(curr);
+    path.push_back(curr);
+
+    while(curr != goal){
+      visited.push_back(visit_list.front());
+      visit_list.pop();
+      //std::cout << visited[0] << std::endl;
+      neighbors = getNeighbors(curr, g);
+      //std::cout << neighbors[2] << std::endl;
+      for (int i = 0; i < neighbors.size(); i++)
+        visit_list.push(neighbors[i]);
+      
+      curr = neighbors.front();
+      visited.push_back(curr);
+      visit_list.pop();
+      path.push_back(curr);
+
+      break;
+    }
 
     // TODO: Perform Breadth First Search over the graph g.
 
